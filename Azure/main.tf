@@ -30,7 +30,7 @@ provider "azurerm" {
 
 locals {
   primary_region    = var.regions[0]
-  functions_baseurl = var.azure_environment == "usgovernment" ? ".azurewebsites.us" : ".azurewebsites.net"
+  functions_baseurl = var.azure_environment == "usgovernment" ? "azurewebsites.us" : "azurewebsites.net"
   api_base_url      = "${var.service_name}-api-${var.environment}.${local.functions_baseurl}"
 }
 
