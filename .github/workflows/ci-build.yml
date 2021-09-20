@@ -30,6 +30,8 @@ jobs:
 
     - name: Terraform Format
       run: terraform fmt -check
+      working-directory: ./Azure
 
     - name: Terraform Validate
       run: terraform validate
+      working-directory: ./Azure
