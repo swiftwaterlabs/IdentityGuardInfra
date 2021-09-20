@@ -33,11 +33,13 @@ locals {
     primary_region = var.regions[0]
 }
 
+# Foundation
 resource "azurerm_resource_group"  "service_resource_group"{
     name = var.resource_group_name
     location = local.primary_region
 }
 
+# Identities
 resource "azurerm_user_assigned_identity" "graph_api_managed_identity" {
     name = "${var.service_name}-graphapi-${var.environment}"
     resource_group_name = azurerm_resource_group.service_resource_group.name
@@ -50,6 +52,7 @@ resource "azurerm_user_assigned_identity" "keyvault_api_managed_identity" {
     location = azurerm_resource_group.service_resource_group.location
 }
 
+# Key Vault
 resource "azurerm_key_vault" "keyvault" {
     name = "${var.service_name}-${var.environment}"
     resource_group_name = azurerm_resource_group.service_resource_group.name
@@ -58,6 +61,7 @@ resource "azurerm_key_vault" "keyvault" {
     tenant_id = var.tenant_id
 }
 
+# Storage
 resource "azurerm_storage_account" "storage_account" {
     name = "${var.service_name}${var.environment}"
     resource_group_name = azurerm_resource_group.service_resource_group.name
@@ -66,6 +70,7 @@ resource "azurerm_storage_account" "storage_account" {
     account_replication_type = "GRS"
 }
 
+# Logging
 resource "azurerm_log_analytics_workspace" "loganalytics" {
     name = "${var.service_name}-${var.environment}"
     resource_group_name = azurerm_resource_group.service_resource_group.name
@@ -81,7 +86,8 @@ resource "azurerm_application_insights" "appinsights" {
     application_type = "web"
 }
 
-resource "azurerm_cosmosdb_account" "cosmosdb" {
+# CosmosDb
+resource "azurerm_cosmosdb_account" "cosmosaccount" {
     name = "${var.service_name}-${var.environment}"
     resource_group_name = azurerm_resource_group.service_resource_group.name
     location = azurerm_resource_group.service_resource_group.location
@@ -101,4 +107,47 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
       name = "EnableServerless"
     }
 
+}
+
+resource "azurerm_cosmosdb_sql_database" "cosmosdb" {
+    name = "identityguard"
+    resource_group_name = azurerm_cosmosdb_account.cosmosaccount.resource_group_name
+    account_name = azurerm_cosmosdb_account.cosmosaccount.name
+  
+}
+
+resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_directories" {
+    name = "Directories"
+    resource_group_name = azurerm_cosmosdb_sql_database.cosmosdb.resource_group_name
+    account_name = azurerm_cosmosdb_sql_database.cosmosdb.account_name
+    database_name = azurerm_cosmosdb_sql_database.cosmosdb.name
+    partition_key_path = "/Area"
+}
+
+# Azure Function
+resource "azurerm_app_service_plan" "function_serviceplan" {
+    name = "${var.service_name}-${var.environment}"
+    resource_group_name = azurerm_resource_group.service_resource_group.name
+    location = azurerm_resource_group.service_resource_group.location
+    kind = "FunctionApp"
+    sku {
+        tier = "Dynamic"
+        size = "Y1"
+    }
+}
+
+resource "azurerm_function_app" "function_api" {
+    name = "${var.service_name}-api-${var.environment}"
+    resource_group_name = azurerm_resource_group.service_resource_group.name
+    location = azurerm_resource_group.service_resource_group.location
+    app_service_plan_id = azurerm_app_service_plan.function_serviceplan.id
+    storage_account_name = azurerm_storage_account.storage_account.name
+    storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
+
+    identity {
+        type = "UserAssigned"
+        identity_ids = [azurerm_user_assigned_identity.graph_api_managed_identity.id,azurerm_user_assigned_identity.keyvault_api_managed_identity.id]
+    }
+
+    
 }
