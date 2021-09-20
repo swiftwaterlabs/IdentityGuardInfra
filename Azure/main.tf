@@ -33,10 +33,11 @@ data "azuread_client_config" "current" {
 }
 
 locals {
-  primary_region     = var.regions[0]
-  functions_baseurl  = var.azure_environment == "usgovernment" ? "azurewebsites.us" : "azurewebsites.net"
-  api_base_url       = "${var.service_name}-api-${var.environment}.${local.functions_baseurl}"
-  application_owners = [data.azuread_client_config.current.object_id]
+  primary_region                = var.regions[0]
+  functions_baseurl             = var.azure_environment == "usgovernment" ? "azurewebsites.us" : "azurewebsites.net"
+  api_base_url                  = "${var.service_name}-api-${var.environment}.${local.functions_baseurl}"
+  executing_serviceprincipal_id = data.azuread_client_config.current.object_id
+  application_owners            = [local.executing_serviceprincipal_id]
 }
 
 # Foundation
@@ -65,6 +66,22 @@ resource "azurerm_key_vault" "keyvault" {
   location            = azurerm_resource_group.service_resource_group.location
   sku_name            = "standard"
   tenant_id           = var.tenant_id
+}
+
+resource "azurerm_key_vault_access_policy" "executing_owner_access" {
+  key_vault_id = azurerm_key_vault.keyvault.id
+  tenant_id    = azurerm_key_vault.keyvault.tenant_id
+  object_id    = local.executing_serviceprincipal_id
+
+  secret_permissions = ["Get", "Set", "List", "Delete"]
+}
+
+resource "azurerm_key_vault_access_policy" "api_access" {
+  key_vault_id = azurerm_key_vault.keyvault.id
+  tenant_id    = azurerm_key_vault.keyvault.tenant_id
+  object_id    = azurerm_user_assigned_identity.keyvault_api_managed_identity.principal_id
+
+  secret_permissions = ["Get"]
 }
 
 # Storage
@@ -113,6 +130,12 @@ resource "azurerm_cosmosdb_account" "cosmosaccount" {
     name = "EnableServerless"
   }
 
+}
+
+resource "azurerm_key_vault_secret" "cosmos_primary_key" {
+  key_vault_id = azurerm_key_vault.keyvault.id
+  name         = "cosmos-primary-key"
+  value        = azurerm_cosmosdb_account.cosmosaccount.primary_key
 }
 
 resource "azurerm_cosmosdb_sql_database" "cosmosdb" {
