@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: production
+    env:
+      working-directory: ./Azure
 
     defaults:
       run:
