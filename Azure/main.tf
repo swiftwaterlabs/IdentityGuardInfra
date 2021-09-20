@@ -13,7 +13,9 @@ terraform {
     }
 
     backend "azurerm"{
-
+        resource_group_name = "idguard-tf"
+        storage_account_name = "idguardtfstate"
+        container_name = "${var.environment}"
     }
 }
 
