@@ -28,10 +28,15 @@ provider "azurerm" {
   }
 }
 
+data "azuread_client_config" "current" {
+
+}
+
 locals {
-  primary_region    = var.regions[0]
-  functions_baseurl = var.azure_environment == "usgovernment" ? "azurewebsites.us" : "azurewebsites.net"
-  api_base_url      = "${var.service_name}-api-${var.environment}.${local.functions_baseurl}"
+  primary_region     = var.regions[0]
+  functions_baseurl  = var.azure_environment == "usgovernment" ? "azurewebsites.us" : "azurewebsites.net"
+  api_base_url       = "${var.service_name}-api-${var.environment}.${local.functions_baseurl}"
+  application_owners = [data.azuread_client_config.current.object_id]
 }
 
 # Foundation
@@ -126,13 +131,9 @@ resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_directories" {
 }
 
 # Azure Function
-data "azuread_client_config" "current" {
-
-}
-
 resource "azuread_application" "application_api" {
   display_name     = "${var.service_name}-api-${var.environment}"
-  owners           = [data.azuread_client_config.current.object_id]
+  owners           = local.application_owners
   sign_in_audience = "AzureADMyOrg"
   web {
     redirect_uris = ["https://${local.api_base_url}/.auth/login/aad/callback/"]
@@ -154,7 +155,7 @@ resource "azuread_application" "application_api" {
 
 resource "azuread_service_principal" "application_sp_api" {
   application_id               = azuread_application.application_api.application_id
-  owners                       = [data.azuread_client_config.current.object_id]
+  owners                       = local.application_owners
   description                  = "${var.service_name}-api-${var.environment}"
   app_role_assignment_required = false
 }
@@ -189,4 +190,29 @@ resource "azurerm_function_app" "function_api" {
       client_id = azuread_application.application_api.application_id
     }
   }
+}
+
+# Web UI
+resource "azuread_application" "application_ui" {
+  display_name     = "${var.service_name}-ui-${var.environment}"
+  owners           = local.application_owners
+  sign_in_audience = "AzureADMyOrg"
+  single_page_application {
+    redirect_uris = ["https://localhost:44323/authentication/login-callback"]
+  }
+
+  required_resource_access {
+    resource_app_id = "00000003-0000-0000-c000-000000000000" # Microsoft Graph
+    resource_access {
+      id   = "e1fe6dd8-ba31-4d61-89e7-88639da4683d" # User.Read
+      type = "Scope"
+    }
+  }
+}
+
+resource "azuread_service_principal" "application_sp_ui" {
+  application_id               = azuread_application.application_ui.application_id
+  owners                       = local.application_owners
+  description                  = "${var.service_name}-ui-${var.environment}"
+  app_role_assignment_required = false
 }
