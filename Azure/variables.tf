@@ -44,3 +44,8 @@ variable "regions"{
     }
 }
 
+variable "ui_base_url"{
+    description = "Base address (url) of the ui application"
+    type = string
+}
+

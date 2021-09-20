@@ -221,7 +221,7 @@ resource "azuread_application" "application_ui" {
   owners           = local.application_owners
   sign_in_audience = "AzureADMyOrg"
   single_page_application {
-    redirect_uris = ["https://localhost:44323/authentication/login-callback"]
+    redirect_uris = ["${var.ui_base_url}/authentication/login-callback"]
   }
 
   required_resource_access {
