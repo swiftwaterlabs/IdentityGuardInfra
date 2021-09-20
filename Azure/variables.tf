@@ -35,3 +35,12 @@ variable "environment"{
     type = string
 }
 
+variable "regions"{
+    description = "Azure regions to deploy resources to"
+    type = list(string)
+    validation {
+        condition = length(var.regions) > 0
+        error_message = "At least 1 region must be defined."
+    }
+}
+

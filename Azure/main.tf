@@ -5,20 +5,15 @@ terraform {
         azurerm = {
             version = "=2.77.0"
             source = "hashicorp/azurerm"
-            features ={
-                key_vault {
-                    purge_soft_delete_on_destroy = true
-                }
-            }
         }
         azuread = {
             version = "=2.3.0"
             source = "hashicorp/azuread"
-        }
+        }  
+    }
 
-        backend "azurerm"{
+    backend "azurerm"{
 
-        }
     }
 }
 
@@ -27,6 +22,11 @@ provider "azurerm" {
   subscription_id = var.subscription_id
   tenant_id = var.tenant_id
   environment = var.environment
+   features {
+                key_vault {
+                    purge_soft_delete_on_destroy = true
+                }
+            }
 }
 
 locals {
@@ -88,6 +88,11 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
     offer_type = "Standard"
     kind = "GlobalDocumentDB"
 
+    geo_location {
+      location = azurerm_resource_group.service_resource_group.location
+      failover_priority = 0
+    }
+
     consistency_policy {
       consistency_level = "Session"
     }
@@ -95,4 +100,5 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
     capabilities {
       name = "EnableServerless"
     }
+
 }
