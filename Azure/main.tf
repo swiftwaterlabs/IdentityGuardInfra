@@ -159,7 +159,7 @@ resource "azuread_application" "application_api" {
   owners           = local.application_owners
   sign_in_audience = "AzureADMyOrg"
   web {
-    redirect_uris = ["https://${local.api_base_url}/.auth/login/aad/callback/"]
+    redirect_uris = ["https://${local.api_base_url}/.auth/login/aad/callback"]
 
     implicit_grant {
       access_token_issuance_enabled = true
