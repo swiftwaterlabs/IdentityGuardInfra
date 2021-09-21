@@ -271,6 +271,14 @@ resource "azuread_application" "application_ui" {
       type = "Scope"
     }
   }
+
+  required_resource_access {
+    resource_app_id = azuread_application.application_api.application_id
+    resource_access {
+      id   = random_uuid.api_user_impersonation_role.result
+      type = "Scope"
+    }
+  }
 }
 
 resource "azuread_service_principal" "application_sp_ui" {
