@@ -201,6 +201,9 @@ resource "azurerm_function_app" "function_api" {
   app_service_plan_id        = azurerm_app_service_plan.function_serviceplan.id
   storage_account_name       = azurerm_storage_account.storage_account.name
   storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
+  version                    = "~3"
+  https_only                 = true
+  http2_enabled = true
 
   identity {
     type         = "UserAssigned"
