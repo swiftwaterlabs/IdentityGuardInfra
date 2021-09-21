@@ -203,7 +203,6 @@ resource "azurerm_function_app" "function_api" {
   storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
   version                    = "~3"
   https_only                 = true
-  http2_enabled = true
 
   identity {
     type         = "UserAssigned"
