@@ -20,7 +20,7 @@ provider "azurerm" {
   use_msi         = var.use_msi_to_authenticate
   subscription_id = var.subscription_id
   tenant_id       = var.tenant_id
-  environment     = var.environment
+  environment     = var.azure_environment
   features {
     key_vault {
       purge_soft_delete_on_destroy = true
