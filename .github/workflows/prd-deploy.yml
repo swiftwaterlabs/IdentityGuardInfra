@@ -19,6 +19,7 @@ jobs:
       ARM_SUBSCRIPTION_ID: "2d518713-c5a2-4fcb-a600-307c349add12"
       ARM_TENANT_ID: "335776b5-3fba-4122-bcef-84458b1b8201"
       ARM_MSI_ENDPOINT: false
+      ARM_USE_MSI: false
 
     defaults:
       run:
@@ -40,5 +41,5 @@ jobs:
       working-directory: ./Azure
 
     - name: Terraform Apply
-      run: terraform apply -input=false -auto-approve -var="service_name=idguard" -var-file="config/idguard.tfvars" -var-file="config/prd.tfvars" 
+      run: terraform apply -input=false -auto-approve -no-color -var="service_name=idguard" -var-file="config/idguard.tfvars" -var-file="config/prd.tfvars" 
       working-directory: ./Azure
