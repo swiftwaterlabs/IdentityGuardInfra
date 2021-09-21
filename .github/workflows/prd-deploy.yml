@@ -32,11 +32,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Terraform Init
-      run: terraform init -input=false \
-          -backend-config="resource_group_name=idguard-tf" \
-          -backend-config="storage_account_name=idguardtfstate" \
-          -backend-config="container_name=prd" \
-          -backend-config="key=dev.terraform.tfstate"
+      run: terraform init -input=false -backend-config="resource_group_name=idguard-tf" -backend-config="storage_account_name=idguardtfstate" -backend-config="container_name=prd" -backend-config="key=dev.terraform.tfstate"
       working-directory: ./Azure
 
     - name: Terraform Validate
