@@ -161,6 +161,7 @@ resource "azuread_application" "application_api" {
   display_name     = "${var.service_name}-api-${var.environment}"
   owners           = local.application_owners
   sign_in_audience = "AzureADMyOrg"
+  identifier_uris  = ["api://${var.service_name}-api-${var.environment}"]
   web {
     redirect_uris = ["https://${local.api_base_url}/.auth/login/aad/callback"]
 
