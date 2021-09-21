@@ -154,6 +154,9 @@ resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_directories" {
 }
 
 # Azure Function
+resource "random_uuid" "api_user_impersonation_role" {}
+resource "random_uuid" "directory_admin_role" {}
+
 resource "azuread_application" "application_api" {
   display_name     = "${var.service_name}-api-${var.environment}"
   owners           = local.application_owners
@@ -173,6 +176,28 @@ resource "azuread_application" "application_api" {
       id   = "e1fe6dd8-ba31-4d61-89e7-88639da4683d" # User.Read
       type = "Scope"
     }
+  }
+
+  api {
+    oauth2_permission_scope {
+      admin_consent_description  = "Allow the application to access the Identity Guard API on your behalf"
+      admin_consent_display_name = "Access API"
+      enabled                    = true
+      id                         = random_uuid.api_user_impersonation_role.result
+      type                       = "User"
+      user_consent_description   = "Allow the application to access the Identity Guard API on your behalf"
+      user_consent_display_name  = "Access API"
+      value                      = "user_impersonation"
+    }
+  }
+
+  app_role {
+    allowed_member_types = ["User"]
+    description          = "Manage Directories"
+    display_name         = "Directory Admin"
+    enabled              = true
+    id                   = random_uuid.directory_admin_role.result
+    value                = "DirectoryAdmin"
   }
 }
 
