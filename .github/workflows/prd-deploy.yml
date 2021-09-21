@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: production
     env:
       working-directory: ./Azure
