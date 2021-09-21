@@ -213,6 +213,18 @@ resource "azurerm_function_app" "function_api" {
       client_id = azuread_application.application_api.application_id
     }
   }
+
+  app_settings = {
+    "APPINSIGHTS_INSTRUMENTATIONKEY"        = azurerm_application_insights.appinsights.instrumentation_key
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.appinsights.connection_string
+    "ASPNETCORE_ENVIRONMENT"                = "Release"
+    "FUNCTIONS_EXTENSION_VERSION"           = "~3"
+    "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
+    "Cosmos:BaseUri"                        = azurerm_cosmosdb_account.cosmosaccount.endpoint
+    "KeyVault:BaseUri"                      = azurerm_key_vault.keyvault.vault_uri
+    "KeyVault:ManagedIdentityClientId"      = azurerm_user_assigned_identity.keyvault_api_managed_identity.principal_id
+
+  }
 }
 
 # Web UI
