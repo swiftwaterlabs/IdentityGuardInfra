@@ -14,6 +14,10 @@ jobs:
     environment: production
     env:
       working-directory: ./Azure
+      ARM_CLIENT_ID: "91f77ba6-fa15-48a8-b947-248659d73176"
+      ARM_CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
+      ARM_SUBSCRIPTION_ID: "2d518713-c5a2-4fcb-a600-307c349add12"
+      ARM_TENANT_ID: "335776b5-3fba-4122-bcef-84458b1b8201"
 
     defaults:
       run:
@@ -25,11 +29,6 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
-
-    - name: Service Principal Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Terraform Init
       run: terraform init -input=false -backend-config="resource_group_name=idguard-tf" -backend-config="storage_account_name=idguardtfstate" -backend-config="container_name=prd" -backend-config="key=dev.terraform.tfstate"
