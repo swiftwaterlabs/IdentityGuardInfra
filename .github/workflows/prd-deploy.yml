@@ -1,0 +1,52 @@
+name: deploy-infrastructue-prd
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["continuous-integration"]
+    branches: [main]
+    types: 
+      - completed
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    environment: production
+    env:
+      working-directory: ./Azure
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Service Principal Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Terraform Init
+      run: terraform init -input=false \
+          -backend-config="resource_group_name=idguard-tf" \
+          -backend-config="storage_account_name=idguardtfstate" \
+          -backend-config="container_name=prd" \
+          -backend-config="key=dev.terraform.tfstate"
+      working-directory: ./Azure
+
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ./Azure
+
+    - name: Terraform Apply
+      run: terraform apply -input=false \
+            -auto-approve \
+            -var="service_name=idguard" \
+            -var-file=".\config\idguard.tfvars" \
+            -var-file=".\config\prd.tfvars" 
+      working-directory: ./Azure
