@@ -18,6 +18,7 @@ jobs:
       ARM_CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
       ARM_SUBSCRIPTION_ID: "2d518713-c5a2-4fcb-a600-307c349add12"
       ARM_TENANT_ID: "335776b5-3fba-4122-bcef-84458b1b8201"
+      ARM_MSI_ENDPOINT: "false"
 
     defaults:
       run:
