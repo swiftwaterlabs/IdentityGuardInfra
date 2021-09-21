@@ -40,5 +40,5 @@ jobs:
       working-directory: ./Azure
 
     - name: Terraform Apply
-      run: terraform apply -input=false -auto-approve -var="service_name=idguard" -var-file=".\config\idguard.tfvars" -var-file=".\config\prd.tfvars" 
+      run: terraform apply -input=false -auto-approve -var="service_name=idguard" -var-file="config/idguard.tfvars" -var-file="config/prd.tfvars" 
       working-directory: ./Azure
