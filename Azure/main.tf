@@ -234,6 +234,16 @@ resource "azurerm_function_app" "function_api" {
     identity_ids = [azurerm_user_assigned_identity.graph_api_managed_identity.id, azurerm_user_assigned_identity.keyvault_api_managed_identity.id]
   }
 
+  site_config {
+    http2_enabled   = true
+    ftps_state      = "FtpsOnly"
+    min_tls_version = "1.2"
+    cors {
+      allowed_origins     = [var.ui_base_url]
+      support_credentials = true
+    }
+  }
+
   auth_settings {
     enabled = true
     active_directory {
