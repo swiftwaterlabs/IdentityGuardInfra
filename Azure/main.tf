@@ -248,9 +248,9 @@ resource "azurerm_function_app" "function_api" {
   auth_settings {
     enabled = true
     active_directory {
-      client_id         = azuread_application.application_api.application_id
-      allowed_audiences = [var.ui_base_url]
+      client_id = azuread_application.application_api.application_id
     }
+
   }
 
   app_settings = {
