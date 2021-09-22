@@ -249,7 +249,12 @@ resource "azurerm_function_app" "function_api" {
     enabled = true
     active_directory {
       client_id = azuread_application.application_api.application_id
+
+      allowed_audiences = [var.ui_base_url]
     }
+
+    default_provider = "AzureActiveDirectory"
+    issuer           = "https://sts.windows.net/${var.tenant_id}"
 
   }
 
