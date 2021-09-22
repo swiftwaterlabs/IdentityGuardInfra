@@ -239,6 +239,7 @@ resource "azurerm_function_app" "function_api" {
     http2_enabled   = true
     ftps_state      = "FtpsOnly"
     min_tls_version = "1.2"
+
     cors {
       allowed_origins     = [var.ui_base_url]
       support_credentials = true
@@ -250,11 +251,13 @@ resource "azurerm_function_app" "function_api" {
     active_directory {
       client_id = azuread_application.application_api.application_id
 
-      allowed_audiences = [var.ui_base_url]
+      allowed_audiences = [var.ui_base_url, "https://${local.api_base_url}"]
     }
 
-    default_provider = "AzureActiveDirectory"
-    issuer           = "https://sts.windows.net/${var.tenant_id}"
+    default_provider              = "AzureActiveDirectory"
+    issuer                        = "https://sts.windows.net/${var.tenant_id}"
+    token_store_enabled           = true
+    unauthenticated_client_action = "AllowAnonymous"
 
   }
 
