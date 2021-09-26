@@ -161,6 +161,14 @@ resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_accessreviews" {
   partition_key_path  = "/Area"
 }
 
+resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_requests" {
+  name                = "Requests"
+  resource_group_name = azurerm_cosmosdb_sql_database.cosmosdb.resource_group_name
+  account_name        = azurerm_cosmosdb_sql_database.cosmosdb.account_name
+  database_name       = azurerm_cosmosdb_sql_database.cosmosdb.name
+  partition_key_path  = "/Area"
+}
+
 # Azure Function
 resource "random_uuid" "api_user_impersonation_role" {}
 resource "random_uuid" "directory_admin_role" {}
