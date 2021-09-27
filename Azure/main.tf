@@ -286,7 +286,7 @@ resource "azurerm_function_app" "function_api" {
     "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
     "Cosmos:BaseUri"                        = azurerm_cosmosdb_account.cosmosaccount.endpoint
     "KeyVault:BaseUri"                      = azurerm_key_vault.keyvault.vault_uri
-    "KeyVault:ManagedIdentityClientId"      = azurerm_user_assigned_identity.keyvault_api_managed_identity.principal_id
+    "KeyVault:ManagedIdentityClientId"      = azurerm_user_assigned_identity.keyvault_api_managed_identity.client_id
 
   }
 }
