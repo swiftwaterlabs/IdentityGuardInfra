@@ -7,7 +7,7 @@ terraform {
       source  = "hashicorp/azurerm"
     }
     azuread = {
-      version = "=2.3.0"
+      version = "=2.4.0"
       source  = "hashicorp/azuread"
     }
   }
@@ -57,6 +57,19 @@ resource "azurerm_user_assigned_identity" "keyvault_api_managed_identity" {
   name                = "${var.service_name}-keyvault-${var.environment}"
   resource_group_name = azurerm_resource_group.service_resource_group.name
   location            = azurerm_resource_group.service_resource_group.location
+}
+
+data "azuread_application_published_app_ids" "well_known" {}
+
+resource "azuread_service_principal" "msgraph" {
+  application_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
+  use_existing   = true
+}
+
+resource "azuread_app_role_assignment" "graph_directory_readall" {
+  app_role_id         = azuread_service_principal.msgraph.app_role_ids["Directory.Read.All"]
+  principal_object_id = azurerm_user_assigned_identity.graph_api_managed_identity.principal_id
+  resource_object_id  = azuread_service_principal.msgraph.object_id
 }
 
 # Key Vault
