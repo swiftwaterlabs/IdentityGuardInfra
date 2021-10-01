@@ -66,8 +66,8 @@ resource "azuread_service_principal" "msgraph" {
   use_existing   = true
 }
 
-resource "azuread_app_role_assignment" "graph_directory_readall" {
-  app_role_id         = azuread_service_principal.msgraph.app_role_ids["Directory.Read.All"]
+resource "azuread_app_role_assignment" "graph_directory_readwriteall" {
+  app_role_id         = azuread_service_principal.msgraph.app_role_ids["Directory.ReadWrite.All"]
   principal_object_id = azurerm_user_assigned_identity.graph_api_managed_identity.principal_id
   resource_object_id  = azuread_service_principal.msgraph.object_id
 }
