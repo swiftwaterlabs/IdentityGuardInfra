@@ -320,6 +320,42 @@ resource "azurerm_function_app" "function_api" {
   }
 }
 
+# Worker
+resource "azurerm_function_app" "function_worker" {
+  name                       = "${var.service_name}-worker-${var.environment}"
+  resource_group_name        = azurerm_resource_group.service_resource_group.name
+  location                   = azurerm_resource_group.service_resource_group.location
+  app_service_plan_id        = azurerm_app_service_plan.function_serviceplan.id
+  storage_account_name       = azurerm_storage_account.storage_account.name
+  storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
+  version                    = "~3"
+  https_only                 = true
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.graph_api_managed_identity.id, azurerm_user_assigned_identity.keyvault_api_managed_identity.id]
+  }
+
+  site_config {
+    http2_enabled   = true
+    ftps_state      = "FtpsOnly"
+    min_tls_version = "1.2"
+  }
+
+  app_settings = {
+    "APPINSIGHTS_INSTRUMENTATIONKEY"        = azurerm_application_insights.appinsights.instrumentation_key
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.appinsights.connection_string
+    "WEBSITE_RUN_FROM_PACKAGE"              = "1"
+    "ASPNETCORE_ENVIRONMENT"                = "Release"
+    "FUNCTIONS_EXTENSION_VERSION"           = "~3"
+    "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated"
+    "Cosmos:BaseUri"                        = azurerm_cosmosdb_account.cosmosaccount.endpoint
+    "KeyVault:BaseUri"                      = azurerm_key_vault.keyvault.vault_uri
+    "KeyVault:ManagedIdentityClientId"      = azurerm_user_assigned_identity.keyvault_api_managed_identity.client_id
+    "lifecyclepolicy-cron"                  = "0 0 */2 * * *"
+  }
+}
+
 # Web UI
 resource "azuread_application" "application_ui" {
   display_name     = "${var.service_name}-ui-${var.environment}"
