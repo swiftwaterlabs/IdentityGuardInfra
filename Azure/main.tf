@@ -320,6 +320,23 @@ resource "azurerm_function_app" "function_api" {
   }
 }
 
+
+# Queues
+resource "azurerm_servicebus_namespace" "worker_messaging" {
+  name                = "${var.service_name}-${var.environment}"
+  resource_group_name = azurerm_resource_group.service_resource_group.name
+  location            = azurerm_resource_group.service_resource_group.location
+  sku                 = "Standard"
+}
+
+resource "azurerm_servicebus_queue" "accessreview_request" {
+  name                = "accessreview-request"
+  resource_group_name = azurerm_resource_group.service_resource_group.name
+  namespace_name      = azurerm_servicebus_namespace.worker_messaging.name
+
+  enable_partitioning = true
+}
+
 # Worker
 resource "azurerm_function_app" "function_worker" {
   name                       = "${var.service_name}-worker-${var.environment}"
@@ -353,6 +370,7 @@ resource "azurerm_function_app" "function_worker" {
     "KeyVault:BaseUri"                      = azurerm_key_vault.keyvault.vault_uri
     "KeyVault:ManagedIdentityClientId"      = azurerm_user_assigned_identity.keyvault_api_managed_identity.client_id
     "lifecyclepolicy-cron"                  = "0 0 */2 * * *"
+    "ServiceBus:Endpoint"                   = azurerm_servicebus_namespace.worker_messaging.default_primary_connection_string
   }
 }
 
