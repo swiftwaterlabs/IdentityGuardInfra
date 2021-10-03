@@ -182,8 +182,8 @@ resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_requests" {
   partition_key_path  = "/Area"
 }
 
-resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_userpolicies" {
-  name                = "UserPolicies"
+resource "azurerm_cosmosdb_sql_container" "cosmoscontainer_lifecyclepolicies" {
+  name                = "LifecyclePolicies"
   resource_group_name = azurerm_cosmosdb_sql_database.cosmosdb.resource_group_name
   account_name        = azurerm_cosmosdb_sql_database.cosmosdb.account_name
   database_name       = azurerm_cosmosdb_sql_database.cosmosdb.name
