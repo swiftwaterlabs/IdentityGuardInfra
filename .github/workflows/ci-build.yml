@@ -13,13 +13,10 @@ jobs:
     defaults:
       run:
         working-directory: ./src
+        shell: bash
     environment: production
     env:
       working-directory: ./Azure
-
-    defaults:
-      run:
-        shell: bash
 
     steps:
     - name: Checkout
