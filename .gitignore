@@ -1,9 +1,11 @@
 # Local .terraform directories
 **/.terraform/*
+src/Azure/.terraform*
 
 # .tfstate files
-*.tfstate
-*.tfstate.*
+**/*.tfstate
+**/*.tfstate.*
+
 
 # Crash log files
 crash.log
