@@ -1,6 +1,6 @@
 # Local .terraform directories
 **/.terraform/*
-src/Azure/.terraform*
+src/**/.terraform*
 
 # .tfstate files
 **/*.tfstate
