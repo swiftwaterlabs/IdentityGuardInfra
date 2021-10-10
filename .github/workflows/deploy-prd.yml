@@ -14,6 +14,7 @@ jobs:
     defaults:
       run:
         working-directory: ./src
+        shell: bash
     environment: production
     env:
       working-directory: ./src/Azure
@@ -23,11 +24,7 @@ jobs:
       ARM_TENANT_ID: "335776b5-3fba-4122-bcef-84458b1b8201"
       ARM_MSI_ENDPOINT: false
       ARM_USE_MSI: false
-
-    defaults:
-      run:
-        shell: bash
-
+      
     steps:
     - name: Checkout
       uses: actions/checkout@v2
