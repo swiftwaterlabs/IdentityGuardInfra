@@ -16,7 +16,7 @@ jobs:
         shell: bash
     environment: production
     env:
-      working-directory: ./Azure
+      working-directory: ./src/Azure
 
     steps:
     - name: Checkout
@@ -27,8 +27,8 @@ jobs:
 
     - name: Terraform Init
       run: terraform init -backend=false
-      working-directory: ./Azure
+      working-directory: ./src/Azure
 
     - name: Terraform Validate
       run: terraform validate
-      working-directory: ./Azure
+      working-directory: ./src/Azure
