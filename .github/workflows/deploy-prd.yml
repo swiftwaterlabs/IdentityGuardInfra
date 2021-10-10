@@ -16,7 +16,7 @@ jobs:
         working-directory: ./src
     environment: production
     env:
-      working-directory: ./Azure
+      working-directory: ./src/Azure
       ARM_CLIENT_ID: "91f77ba6-fa15-48a8-b947-248659d73176"
       ARM_CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
       ARM_SUBSCRIPTION_ID: "2d518713-c5a2-4fcb-a600-307c349add12"
@@ -37,12 +37,12 @@ jobs:
 
     - name: Terraform Init
       run: terraform init -input=false -backend-config="resource_group_name=idguard-tf" -backend-config="storage_account_name=idguardtfstate" -backend-config="container_name=prd" -backend-config="key=dev.terraform.tfstate"
-      working-directory: ./Azure
+      working-directory: ./src/Azure
 
     - name: Terraform Validate
       run: terraform validate
-      working-directory: ./Azure
+      working-directory: ./src/Azure
 
     - name: Terraform Apply
       run: terraform apply -input=false -auto-approve -no-color -var="service_name=idguard" -var-file="config/idguard.tfvars" -var-file="config/prd.tfvars" 
-      working-directory: ./Azure
+      working-directory: ./src/Azure
