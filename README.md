@@ -13,7 +13,7 @@ Infrastructure as Code definitions to support the IdentityGuard project.
 |src/Azure/config|Terraform|Configuration values for different environments|
 |src/Azure/scripts|Powershell|Scripts to run for development use|
 
-## Pipelines
+## Actions
 |Action|Description|
 |---|---|
 |.github/workflows/ci-build.yml|Continuous Integration build for the the /src/Azure code|
